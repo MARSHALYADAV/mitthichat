@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Rooms collection
+    // Anyone with the roomId can read/write - confidentiality relies on client-side encryption
+    match /rooms/{roomId} {
+      allow read, write: if request.auth == null; // Anonymous access
+      
+      // Messages subcollection
+      match /messages/{messageId} {
+        allow read, write: if request.auth == null; // Anyone with roomId can access
+      }
+      
+      // Signaling subcollection (ephemeral WebRTC signaling)
+      match /signaling/{signalId} {
+        allow read, write: if request.auth == null; // Anyone with roomId can access
+      }
+    }
+  }
+}
+
+
+
